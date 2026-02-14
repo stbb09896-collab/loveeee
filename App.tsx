@@ -54,17 +54,8 @@ const App: React.FC = () => {
     currentSong = infiniteSong;
   }
 
-  // Effect to automatically start music 1 second after loading finishes
-  useEffect(() => {
-    if (!isLoading) {
-      const timer = setTimeout(() => {
-        setIsAudioPlaying(true);
-      }, 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [isLoading]);
-
   // Effect to automatically unmute/play when reaching the Infinite Promise section
+  // only if the user has already engaged with the site/scrolled down
   useEffect(() => {
     if (isInfiniteInView) {
       setIsAudioPlaying(true);
@@ -91,6 +82,7 @@ const App: React.FC = () => {
   }, []);
 
   const startJourney = () => {
+    // This is the trigger to start the emotional ride
     setIsAudioPlaying(true);
     sectionRefs.story.current?.scrollIntoView({ behavior: 'smooth' });
   };
