@@ -33,18 +33,35 @@ const Hero: React.FC<HeroProps> = ({ onBegin }) => {
         transition={{ duration: 2 }}
         className="relative z-10 flex flex-col items-center max-w-5xl text-center"
       >
-        {/* Luxury Circular Profile Moment */}
+        {/* Luxury Circular Profile Moment - Enhanced with floating and red glow */}
         <motion.div
-          animate={{ y: [0, -10, 0] }}
-          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-          className="mb-12"
+          animate={{ 
+            y: [0, -15, 0],
+            rotate: [0, 2, 0, -2, 0]
+          }}
+          transition={{ 
+            duration: 6, 
+            repeat: Infinity, 
+            ease: "easeInOut" 
+          }}
+          className="mb-12 relative"
         >
-          <div className="w-40 h-40 md:w-56 md:h-56 rounded-full overflow-hidden border-2 border-red-900/30 shadow-2xl p-1 bg-black/50 backdrop-blur-md">
+          {/* Pulsing Outer Glow */}
+          <motion.div 
+            animate={{ scale: [1, 1.1, 1], opacity: [0.2, 0.4, 0.2] }}
+            transition={{ duration: 3, repeat: Infinity }}
+            className="absolute inset-0 bg-red-600 rounded-full blur-3xl -z-10"
+          />
+          
+          <div className="w-40 h-40 md:w-56 md:h-56 rounded-full overflow-hidden border-2 border-red-500/30 shadow-[0_0_50px_rgba(220,38,38,0.3)] p-1 bg-black/50 backdrop-blur-md relative">
             <img 
               src="https://lh3.googleusercontent.com/d/16GqALbLODSfnVUa2cD8-6YqrD_P5ribz" 
               alt="Our Moment" 
-              className="w-full h-full object-cover rounded-full filter sepia-[0.2]"
+              className="w-full h-full object-cover rounded-full opacity-75 filter saturate-[1.5] brightness-90"
             />
+            {/* Red Overlay Effect */}
+            <div className="absolute inset-0 bg-red-900/20 mix-blend-color pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-tr from-red-600/10 to-transparent pointer-events-none" />
           </div>
         </motion.div>
 
