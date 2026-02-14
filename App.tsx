@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useInView } from 'framer-motion';
 import Hero from './components/Hero';
 import Story from './components/Story';
 import Timeline from './components/Timeline';
+import InfinitePromise from './components/InfinitePromise';
 import Gallery from './components/Gallery';
 import Letter from './components/Letter';
 import Proposal from './components/Proposal';
@@ -13,6 +14,8 @@ import AudioPlayer from './components/AudioPlayer';
 const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [loadingTextIndex, setLoadingTextIndex] = useState(0);
+  const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+  const [hasAcceptedProposal, setHasAcceptedProposal] = useState(false);
   
   const loadingMessages = [
     "Gathering our memories...",
@@ -27,13 +30,48 @@ const App: React.FC = () => {
     hero: useRef<HTMLDivElement>(null),
     story: useRef<HTMLDivElement>(null),
     timeline: useRef<HTMLDivElement>(null),
+    infinite: useRef<HTMLDivElement>(null),
     gallery: useRef<HTMLDivElement>(null),
     letter: useRef<HTMLDivElement>(null),
     proposal: useRef<HTMLDivElement>(null),
   };
 
+  // Detect visibility of sections to switch songs
+  const isInfiniteInView = useInView(sectionRefs.infinite, { amount: 0.1 });
+  const isGalleryInView = useInView(sectionRefs.gallery, { amount: 0.1 });
+  const isLetterInView = useInView(sectionRefs.letter, { amount: 0.1 });
+  const isProposalInView = useInView(sectionRefs.proposal, { amount: 0.1 });
+
+  const mainSong = "https://res.cloudinary.com/dog2onxal/video/upload/v1771076655/Barney_Sku-_Your_eyes_got_my_heart_falling_for_you_x_Teri_nazron_ne_your_eyes_got_my_heart_kfdycg.mp3";
+  const infiniteSong = "https://res.cloudinary.com/dog2onxal/video/upload/v1771077155/Vekhegi_mainu_te_sochegi_kya_tu__Dooron_Dooron_Live_-_Paresh_Pahuja_l23w9o.mp3";
+  const finalSong = "https://res.cloudinary.com/dog2onxal/video/upload/v1771077525/meri_jakhmo_ko_teri_chhuan_chahiye_tu_chahiye_sukoon_atifaslam_tuchahiye_eadwyz.mp3";
+
+  // Audio Logic
+  let currentSong = mainSong;
+  if (hasAcceptedProposal) {
+    currentSong = finalSong;
+  } else if (isInfiniteInView || isGalleryInView || isLetterInView || isProposalInView) {
+    currentSong = infiniteSong;
+  }
+
+  // Effect to automatically start music 1 second after loading finishes
   useEffect(() => {
-    // Cycle through loading messages
+    if (!isLoading) {
+      const timer = setTimeout(() => {
+        setIsAudioPlaying(true);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [isLoading]);
+
+  // Effect to automatically unmute/play when reaching the Infinite Promise section
+  useEffect(() => {
+    if (isInfiniteInView) {
+      setIsAudioPlaying(true);
+    }
+  }, [isInfiniteInView]);
+
+  useEffect(() => {
     const textInterval = setInterval(() => {
       setLoadingTextIndex((prev) => {
         if (prev < loadingMessages.length - 1) return prev + 1;
@@ -53,7 +91,14 @@ const App: React.FC = () => {
   }, []);
 
   const startJourney = () => {
+    setIsAudioPlaying(true);
     sectionRefs.story.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleProposalAccept = () => {
+    setHasAcceptedProposal(true);
+    // Automatically play the final song immediately
+    setIsAudioPlaying(true);
   };
 
   return (
@@ -111,7 +156,11 @@ const App: React.FC = () => {
 
       <CursorGlow />
       <FloatingHearts />
-      <AudioPlayer />
+      <AudioPlayer 
+        isPlaying={isAudioPlaying} 
+        setIsPlaying={setIsAudioPlaying} 
+        src={currentSong}
+      />
 
       <div id="hero" ref={sectionRefs.hero}>
         <Hero onBegin={startJourney} />
@@ -124,6 +173,10 @@ const App: React.FC = () => {
       <div id="timeline" ref={sectionRefs.timeline}>
         <Timeline />
       </div>
+
+      <div id="infinite" ref={sectionRefs.infinite}>
+        <InfinitePromise />
+      </div>
       
       <div id="gallery" ref={sectionRefs.gallery}>
         <Gallery />
@@ -134,7 +187,7 @@ const App: React.FC = () => {
       </div>
       
       <div id="proposal" ref={sectionRefs.proposal}>
-        <Proposal />
+        <Proposal onAccept={handleProposalAccept} isAccepted={hasAcceptedProposal} />
       </div>
 
       <footer className="py-8 text-center text-white/20 text-xs font-serif italic tracking-widest border-t border-white/5 bg-black">

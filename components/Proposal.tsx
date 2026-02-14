@@ -1,15 +1,18 @@
-
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import { Heart } from 'lucide-react';
 
-const Proposal: React.FC = () => {
-  const [accepted, setAccepted] = useState(false);
+interface ProposalProps {
+  onAccept: () => void;
+  isAccepted: boolean;
+}
+
+const Proposal: React.FC<ProposalProps> = ({ onAccept, isAccepted }) => {
   const [noButtonPos, setNoButtonPos] = useState({ x: 0, y: 0 });
 
   const handleYes = () => {
-    setAccepted(true);
+    onAccept();
     const duration = 5 * 1000;
     const animationEnd = Date.now() + duration;
     const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
@@ -38,7 +41,7 @@ const Proposal: React.FC = () => {
   return (
     <section className="min-h-screen py-24 flex items-center justify-center bg-black relative overflow-hidden">
       <AnimatePresence mode="wait">
-        {!accepted ? (
+        {!isAccepted ? (
           <motion.div
             key="question"
             initial={{ opacity: 0, y: 30 }}
@@ -85,7 +88,7 @@ const Proposal: React.FC = () => {
             animate={{ opacity: 1 }}
             className="absolute inset-0 flex items-center justify-center"
           >
-            {/* Background Cover Photo - Increased opacity slightly to 0.5 as requested */}
+            {/* Background Cover Photo */}
             <motion.div 
               initial={{ scale: 1.1, opacity: 0 }}
               animate={{ scale: 1, opacity: 0.5 }}
@@ -97,7 +100,6 @@ const Proposal: React.FC = () => {
                 alt="Memory Cover" 
                 className="w-full h-full object-cover mix-blend-overlay filter brightness-75"
               />
-              {/* Gradient overlays to help merge colors */}
               <div className="absolute inset-0 bg-gradient-to-b from-black via-red-950/20 to-black" />
               <div className="absolute inset-0 bg-black/40" />
             </motion.div>
