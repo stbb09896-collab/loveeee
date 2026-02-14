@@ -1,4 +1,3 @@
-
 import { TimelineEvent, GalleryItem } from './types';
 
 export const COLORS = {
@@ -21,7 +20,7 @@ export const TIMELINE_DATA: TimelineEvent[] = [
     id: '2',
     date: 'July 7, 2023',
     title: 'Our First Date',
-    description: 'The moment my world finally gained color. I was so nervous, but seeing your smile in person for the first time made everything else disappear. It was the start of the greatest adventure of my life.',
+    description: 'The moment my world finally gained color. I was so nervous, but seeing your smile in person made everything else disappear. It was the start of the greatest adventure of my life.',
     image: 'https://lh3.googleusercontent.com/d/1MKMy7ME1FNnSWFRfO6bEygdB36mkDF05',
   },
   {

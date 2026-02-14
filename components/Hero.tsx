@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Heart } from 'lucide-react';
@@ -50,15 +49,13 @@ const Hero: React.FC<HeroProps> = ({ onBegin }) => {
         </motion.div>
 
         {/* Cinematic Captions */}
-     {/* Cinematic Captions */}
-<h1 className="text-4xl md:text-7xl font-serif font-light mb-8 text-white leading-tight tracking-tight px-4">
-  Every word here carries a feeling I was never able to fully say out loud.
-</h1>
+        <h1 className="text-4xl md:text-7xl font-serif font-light mb-8 text-white leading-tight tracking-tight px-4">
+          Every word here carries a feeling I was never able to fully say out loud.
+        </h1>
 
-<p className="text-lg md:text-xl font-serif text-red-200/60 mb-12 max-w-2xl leading-relaxed italic drop-shadow-lg">
-  Every moment we shared, every laugh, every silence, every heartbeat that changed me. You didn’t just enter my life, you became a part of who I am.
-</p>
-
+        <p className="text-lg md:text-xl font-serif text-red-200/60 mb-12 max-w-2xl leading-relaxed italic drop-shadow-lg">
+          Every moment we shared, every laugh, every silence, every heartbeat that changed me. You didn’t just enter my life, you became a part of who I am.
+        </p>
         
         <motion.button
           whileHover={{ scale: 1.05, backgroundColor: 'rgba(127, 29, 29, 0.6)' }}

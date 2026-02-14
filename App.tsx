@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Hero from './components/Hero';
@@ -9,6 +8,7 @@ import Letter from './components/Letter';
 import Proposal from './components/Proposal';
 import FloatingHearts from './components/FloatingHearts';
 import CursorGlow from './components/CursorGlow';
+import AudioPlayer from './components/AudioPlayer';
 
 const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -33,15 +33,14 @@ const App: React.FC = () => {
   };
 
   useEffect(() => {
-    // Cycle through loading messages slower (1600ms)
+    // Cycle through loading messages
     const textInterval = setInterval(() => {
       setLoadingTextIndex((prev) => {
         if (prev < loadingMessages.length - 1) return prev + 1;
-        return prev; // Stay on the last message once reached
+        return prev;
       });
     }, 1600);
 
-    // Total loading time increased to account for slower text cycle
     const timer = setTimeout(() => {
       setIsLoading(false);
       clearInterval(textInterval);
@@ -112,6 +111,7 @@ const App: React.FC = () => {
 
       <CursorGlow />
       <FloatingHearts />
+      <AudioPlayer />
 
       <div id="hero" ref={sectionRefs.hero}>
         <Hero onBegin={startJourney} />

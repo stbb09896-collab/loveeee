@@ -1,83 +1,84 @@
-
 import React, { useState, useRef, useEffect } from 'react';
-import { Volume2, VolumeX } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Music, Volume2, VolumeX } from 'lucide-react';
 
-interface AudioConfig {
-  url: string;
-  startTime?: number;
-}
+const AudioPlayer: React.FC = () => {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
-interface AudioPlayerProps {
-  isPlaying: boolean;
-  setIsPlaying: (val: boolean) => void;
-  audioConfig: AudioConfig;
-}
+  const togglePlay = () => {
+    if (!audioRef.current) return;
 
-const AudioPlayer: React.FC<AudioPlayerProps> = ({ isPlaying, setIsPlaying, audioConfig }) => {
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-
-  // Handle Play/Pause toggle
-  useEffect(() => {
-    if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.play().catch(err => {
-          console.log("Playback blocked or failed:", err);
-        });
-      } else {
-        audioRef.current.pause();
-      }
+    if (isPlaying) {
+      audioRef.current.pause();
+    } else {
+      audioRef.current.play().catch(err => {
+        console.warn("Autoplay was prevented. User interaction required.", err);
+      });
     }
-  }, [isPlaying]);
+    setIsPlaying(!isPlaying);
+  };
 
-  // Handle source changes and seeking to specific parts
   useEffect(() => {
-    if (audioRef.current && audioConfig.url) {
-      const wasPlaying = isPlaying;
-      
-      // If it's a new URL, swap and seek
-      if (audioRef.current.src !== audioConfig.url) {
-        audioRef.current.src = audioConfig.url;
-        audioRef.current.load();
-        
-        // When metadata loads, we can seek to the specific part
-        const onLoadedMetadata = () => {
-          if (audioRef.current && audioConfig.startTime !== undefined) {
-            audioRef.current.currentTime = audioConfig.startTime;
-          }
-          if (wasPlaying) {
-            audioRef.current.play().catch(() => {});
-          }
-          audioRef.current?.removeEventListener('loadedmetadata', onLoadedMetadata);
-        };
-        
-        audioRef.current.addEventListener('loadedmetadata', onLoadedMetadata);
-      }
+    // Attempt to autoplay on mount, though most browsers block this
+    const audio = audioRef.current;
+    if (audio) {
+      audio.volume = 0.4;
     }
-  }, [audioConfig.url, audioConfig.startTime]);
+  }, []);
 
   return (
-    <div className="fixed bottom-8 right-8 z-[2000]">
-      <audio ref={audioRef} loop />
-      <button
-        onClick={() => setIsPlaying(!isPlaying)}
-        className="w-12 h-12 bg-darkRed/20 backdrop-blur-md border border-red-900/50 rounded-full flex items-center justify-center text-red-500 hover:text-red-400 hover:scale-110 transition-all duration-300 shadow-lg shadow-red-900/20 group"
-        aria-label={isPlaying ? "Mute Music" : "Play Music"}
+    <div className="fixed bottom-8 right-8 z-[200]">
+      <audio
+        ref={audioRef}
+        src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" // Romantic placeholder, easy to edit
+        loop
+      />
+      <motion.button
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        onClick={togglePlay}
+        className="w-14 h-14 rounded-full bg-red-950/40 backdrop-blur-xl border border-red-500/30 flex items-center justify-center text-red-200 shadow-2xl relative group"
       >
-        {isPlaying ? (
-          <Volume2 size={24} className="group-hover:animate-pulse" />
-        ) : (
-          <VolumeX size={24} />
-        )}
-        
-        <span className="absolute -top-1 -right-1 flex h-3 w-3">
-          {isPlaying && (
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+        <AnimatePresence mode="wait">
+          {isPlaying ? (
+            <motion.div
+              key="playing"
+              initial={{ opacity: 0, rotate: -45 }}
+              animate={{ opacity: 1, rotate: 0 }}
+              exit={{ opacity: 0, rotate: 45 }}
+            >
+              <Volume2 size={24} />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="muted"
+              initial={{ opacity: 0, rotate: -45 }}
+              animate={{ opacity: 1, rotate: 0 }}
+              exit={{ opacity: 0, rotate: 45 }}
+            >
+              <VolumeX size={24} />
+            </motion.div>
           )}
-          <span className={`relative inline-flex rounded-full h-3 w-3 ${isPlaying ? 'bg-red-500' : 'bg-zinc-800'}`}></span>
-        </span>
-      </button>
+        </AnimatePresence>
+
+        {/* Pulsing rings when playing */}
+        {isPlaying && (
+          <motion.div
+            animate={{ scale: [1, 1.5], opacity: [0.5, 0] }}
+            transition={{ duration: 2, repeat: Infinity }}
+            className="absolute inset-0 rounded-full border border-red-500/50 pointer-events-none"
+          />
+        )}
+      </motion.button>
+      
+      {/* Tooltip */}
+      <div className="absolute right-full mr-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-black/60 px-3 py-1 rounded text-[10px] uppercase tracking-widest text-white/60 pointer-events-none whitespace-nowrap">
+        {isPlaying ? 'Pause Melody' : 'Play Melody'}
+      </div>
     </div>
   );
 };
 
+import { AnimatePresence } from 'framer-motion';
 export default AudioPlayer;
