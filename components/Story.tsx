@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 import { motion, Variants } from 'framer-motion';
 
@@ -85,7 +86,7 @@ const Story: React.FC = () => {
             className="mt-8 flex flex-col"
           >
             <span className="font-script text-4xl text-red-500">- Our Beginnings</span>
-            <span className="text-white/40 text-sm tracking-widest uppercase mt-2">27 July 2023</span>
+            <span className="text-white/40 text-sm tracking-widest uppercase mt-2">27 June 2023</span>
           </motion.div>
         </div>
       </div>
